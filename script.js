@@ -1,228 +1,286 @@
-// ---------------- Global Stock Data ----------------
+// ---------------- Global Data ----------------
 window.stockItems = window.stockItems || [];
 window.stockInHistory = window.stockInHistory || [];
 window.stockOutHistory = window.stockOutHistory || [];
+window.requests = window.requests || [];
 
-const alertLevels = { high: 50, medium: 20, low: 0 };
+const itemsPerPage = 10;
 
-// ---------------- Stock Items ----------------
-function renderStockItemsTable() {
-  const tbody = document.querySelector('#stock-table tbody');
-  if(!tbody) return;
-  tbody.innerHTML = '';
-  stockItems.forEach((item,index)=>{
-    const remaining = item.qty || 0;
-    let status = 'high';
-    if(remaining<=alertLevels.medium && remaining>0) status='medium';
-    else if(remaining<=alertLevels.low) status='low';
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${item.name}</td>
-      <td>${item.category}</td>
-      <td>${item.inQty||0}</td>
-      <td>${remaining}</td>
-      <td>${item.alertLevel||0}</td>
-      <td><span class="badge ${status}">${status}</span></td>
-      <td>
-        <button class="action-btn edit" onclick="editStockItem(${index})">އެޑިޓް</button>
-        <button class="action-btn delete" onclick="deleteStockItem(${index})">ޑިލީޓް</button>
-      </td>`;
-    tbody.appendChild(tr);
-  });
+// ---------------- Helpers ----------------
+function $(id) {
+  return document.getElementById(id);
 }
 
-function editStockItem(index){ alert('އެޑިޓް ކުރަން'); }
-function deleteStockItem(index){
-  if(confirm('ސްޓޮކް އިޓަމް ޑިލީޓް ކުރަންތަ؟')){
-    stockItems.splice(index,1);
-    renderStockItemsTable();
-  }
+// ---------------- STOCK IN ----------------
+let stockInPage = 1;
+
+function openStockInModal() {
+  $('stockInItems').innerHTML = '';
+  addStockInRow();
+  $('stockInDate').valueAsDate = new Date();
+  $('stockInModal').style.display = 'flex';
 }
 
-// ---------------- Stock IN ----------------
-function addStockIn(entries,date,staff,remarks){
-  entries.forEach(entry=>{
-    const {item,qty} = entry;
-    let stockItem = stockItems.find(i=>i.name===item);
-    if(stockItem){
+function closeStockInModal() {
+  $('stockInModal').style.display = 'none';
+}
+
+function addStockInRow() {
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.innerHTML = `
+    <input type="text" placeholder="ސްޓޮކް އައިޓަމް">
+    <input type="number" placeholder="Qty">
+    <button onclick="this.parentElement.remove()">🗑</button>
+  `;
+  $('stockInItems').appendChild(row);
+}
+
+function submitStockIn() {
+  const date = $('stockInDate').value;
+  const staff = $('stockInStaff').value;
+  const remarks = $('stockInRemarks').value;
+
+  const rows = document.querySelectorAll('#stockInItems .item-row');
+  rows.forEach(row => {
+    const item = row.children[0].value;
+    const qty = Number(row.children[1].value);
+    if (!item || !qty) return;
+
+    let stockItem = stockItems.find(i => i.name === item);
+    if (stockItem) {
       stockItem.qty += qty;
-      stockItem.inQty = (stockItem.inQty||0)+qty;
+      stockItem.inQty = (stockItem.inQty || 0) + qty;
     } else {
-      stockItems.push({name:item,category:'N/A',qty, inQty:qty, alertLevel:0});
+      stockItems.push({ name: item, qty, inQty: qty });
     }
-    stockInHistory.push({date,item,qty,staff,remarks});
+
+    stockInHistory.push({ date, item, qty, staff, remarks });
   });
-  renderStockItemsTable();
+
+  closeStockInModal();
   renderStockInHistory();
 }
 
-// ---------------- Stock IN History ----------------
-const itemsPerPage = 10;
-let stockInPage = 1;
+function renderStockInHistory() {
+  const tbody = $('stock-in-history-body');
+  if (!tbody) return;
 
-function renderStockInHistory(){
-  const tbody = document.getElementById('stock-in-history-body');
-  if(!tbody) return;
-  const start = (stockInPage-1)*itemsPerPage;
-  const end = start+itemsPerPage;
-  const pageItems = stockInHistory.slice(start,end);
-  tbody.innerHTML='';
-  pageItems.forEach((entry,i)=>{
+  const start = (stockInPage - 1) * itemsPerPage;
+  const pageItems = stockInHistory.slice(start, start + itemsPerPage);
+
+  tbody.innerHTML = '';
+  pageItems.forEach((e, i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML=`<td>${start+i+1}</td>
-                  <td>${entry.date}</td>
-                  <td>${entry.item}</td>
-                  <td>${entry.qty}</td>
-                  <td>${entry.staff}</td>
-                  <td>${entry.remarks}</td>
-                  <td>
-                    <button onclick="editStockIn(${start+i})">އެޑިޓް</button>
-                    <button onclick="deleteStockIn(${start+i})">ޑިލީޓް</button>
-                  </td>`;
+    tr.innerHTML = `
+      <td>${start + i + 1}</td>
+      <td>${e.date}</td>
+      <td>${e.item}</td>
+      <td>${e.qty}</td>
+      <td>${e.staff}</td>
+      <td>${e.remarks}</td>
+      <td>
+        <button onclick="deleteStockIn(${start + i})">🗑</button>
+      </td>
+    `;
     tbody.appendChild(tr);
   });
+
   renderStockInPagination();
 }
 
-function renderStockInPagination(){
-  const container = document.getElementById('stock-in-pagination');
-  if(!container) return;
-  container.innerHTML='';
-  const pages = Math.ceil(stockInHistory.length/itemsPerPage);
-  for(let i=1;i<=pages;i++){
-    const btn=document.createElement('button');
-    btn.innerText=i;
-    if(i===stockInPage) btn.classList.add('active');
-    btn.addEventListener('click',()=>{ stockInPage=i; renderStockInHistory(); });
+function renderStockInPagination() {
+  const container = $('stock-in-pagination');
+  if (!container) return;
+  container.innerHTML = '';
+  const pages = Math.ceil(stockInHistory.length / itemsPerPage);
+  for (let i = 1; i <= pages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    if (i === stockInPage) btn.classList.add('active');
+    btn.onclick = () => {
+      stockInPage = i;
+      renderStockInHistory();
+    };
     container.appendChild(btn);
   }
 }
 
-function editStockIn(index){ alert('އެޑިޓް ކުރަން'); }
-function deleteStockIn(index){
-  if(confirm('ސްޓޮކް IN ލިސްޓް ޑިލީޓް ކުރަންތަ؟')){
-    const entry = stockInHistory.splice(index,1)[0];
-    const stockItem = stockItems.find(i=>i.name===entry.item);
-    if(stockItem) stockItem.qty -= entry.qty;
-    renderStockItemsTable();
-    renderStockInHistory();
+function deleteStockIn(index) {
+  if (!confirm('ސްޓޮކް IN ޑިލީޓް ކުރަންތަ؟')) return;
+  const entry = stockInHistory.splice(index, 1)[0];
+  const stockItem = stockItems.find(i => i.name === entry.item);
+  if (stockItem) stockItem.qty -= entry.qty;
+  renderStockInHistory();
+}
+
+// ---------------- STOCK OUT ----------------
+let stockOutPage = 1;
+
+function openStockOutModal() {
+  $('stockOutItems').innerHTML = '';
+  addStockOutRow();
+  $('stockOutDate').valueAsDate = new Date();
+  $('stockOutModal').style.display = 'flex';
+}
+
+function closeStockOutModal() {
+  $('stockOutModal').style.display = 'none';
+}
+
+function addStockOutRow() {
+  const row = document.createElement('div');
+  row.className = 'item-row';
+
+  const options = stockItems.map(i => `<option value="${i.name}">`).join('');
+
+  row.innerHTML = `
+    <input list="stockItemsList" placeholder="ސްޓޮކް އައިޓަމް">
+    <input type="number" placeholder="Qty">
+    <button onclick="this.parentElement.remove()">🗑</button>
+  `;
+
+  $('stockOutItems').appendChild(row);
+
+  if (!$('stockItemsList')) {
+    const dl = document.createElement('datalist');
+    dl.id = 'stockItemsList';
+    dl.innerHTML = options;
+    document.body.appendChild(dl);
+  } else {
+    $('stockItemsList').innerHTML = options;
   }
 }
 
-// ---------------- Stock OUT ----------------
-let stockOutPage =1;
+function submitStockOut() {
+  const date = $('stockOutDate').value;
+  const staff = $('stockOutStaff').value;
+  const remarks = $('stockOutRemarks').value;
 
-function addStockOut(entries,date,staff,remarks){
-  entries.forEach(entry=>{
-    const {item,qty} = entry;
-    let stockItem = stockItems.find(i=>i.name===item);
-    if(stockItem && stockItem.qty>=qty){
-      stockItem.qty -= qty;
-      stockOutHistory.push({date,item,qty,staff,remarks});
-    } else {
-      alert('ސްޓޮކް ނޫން');
+  const rows = document.querySelectorAll('#stockOutItems .item-row');
+  rows.forEach(row => {
+    const item = row.children[0].value;
+    const qty = Number(row.children[1].value);
+    if (!item || !qty) return;
+
+    const stockItem = stockItems.find(i => i.name === item);
+    if (!stockItem || stockItem.qty < qty) {
+      alert('ސްޓޮކް ނުވަތަ މަދު');
+      return;
     }
+
+    stockItem.qty -= qty;
+    stockOutHistory.push({ date, item, qty, staff, remarks });
   });
-  renderStockItemsTable();
+
+  closeStockOutModal();
   renderStockOutHistory();
 }
 
-function renderStockOutHistory(){
-  const tbody = document.getElementById('stock-out-history-body');
-  if(!tbody) return;
-  const start = (stockOutPage-1)*itemsPerPage;
-  const end = start+itemsPerPage;
-  const pageItems = stockOutHistory.slice(start,end);
-  tbody.innerHTML='';
-  pageItems.forEach((entry,i)=>{
+function renderStockOutHistory() {
+  const tbody = $('stock-out-history-body');
+  if (!tbody) return;
+
+  const start = (stockOutPage - 1) * itemsPerPage;
+  const pageItems = stockOutHistory.slice(start, start + itemsPerPage);
+
+  tbody.innerHTML = '';
+  pageItems.forEach((e, i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML=`<td>${start+i+1}</td>
-                  <td>${entry.date}</td>
-                  <td>${entry.item}</td>
-                  <td>${entry.qty}</td>
-                  <td>${entry.staff}</td>
-                  <td>${entry.remarks}</td>
-                  <td>
-                    <button onclick="editStockOut(${start+i})">އެޑިޓް</button>
-                    <button onclick="deleteStockOut(${start+i})">ޑިލީޓް</button>
-                  </td>`;
+    tr.innerHTML = `
+      <td>${start + i + 1}</td>
+      <td>${e.date}</td>
+      <td>${e.item}</td>
+      <td>${e.qty}</td>
+      <td>${e.staff}</td>
+      <td>${e.remarks}</td>
+      <td>
+        <button onclick="deleteStockOut(${start + i})">🗑</button>
+      </td>
+    `;
     tbody.appendChild(tr);
   });
+
   renderStockOutPagination();
 }
 
-function renderStockOutPagination(){
-  const container = document.getElementById('stock-out-pagination');
-  if(!container) return;
-  container.innerHTML='';
-  const pages = Math.ceil(stockOutHistory.length/itemsPerPage);
-  for(let i=1;i<=pages;i++){
-    const btn=document.createElement('button');
-    btn.innerText=i;
-    if(i===stockOutPage) btn.classList.add('active');
-    btn.addEventListener('click',()=>{ stockOutPage=i; renderStockOutHistory(); });
+function renderStockOutPagination() {
+  const container = $('stock-out-pagination');
+  if (!container) return;
+  container.innerHTML = '';
+  const pages = Math.ceil(stockOutHistory.length / itemsPerPage);
+  for (let i = 1; i <= pages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    if (i === stockOutPage) btn.classList.add('active');
+    btn.onclick = () => {
+      stockOutPage = i;
+      renderStockOutHistory();
+    };
     container.appendChild(btn);
   }
 }
 
-function editStockOut(index){ alert('އެޑިޓް ކުރަން'); }
-function deleteStockOut(index){
-  if(confirm('ސްޓޮކް OUT ލިސްޓް ޑިލީޓް ކުރަންތަ؟')){
-    const entry = stockOutHistory.splice(index,1)[0];
-    const stockItem = stockItems.find(i=>i.name===entry.item);
-    if(stockItem) stockItem.qty += entry.qty;
-    renderStockItemsTable();
-    renderStockOutHistory();
-  }
-  let requests = [];
-let formCounter = 1;
+function deleteStockOut(index) {
+  if (!confirm('ސްޓޮކް OUT ޑިލީޓް ކުރަންތަ؟')) return;
+  const entry = stockOutHistory.splice(index, 1)[0];
+  const stockItem = stockItems.find(i => i.name === entry.item);
+  if (stockItem) stockItem.qty += entry.qty;
+  renderStockOutHistory();
+}
 
-const modal = document.getElementById("requestModal");
-const newBtn = document.getElementById("newRequestBtn");
-const closeBtn = document.getElementById("closeModal");
-const cancelBtn = document.getElementById("cancelBtn");
-const submitBtn = document.getElementById("submitBtn");
-const itemsContainer = document.getElementById("itemsContainer");
-const table = document.getElementById("requestTable");
+// ---------------- STOCK REQUEST ----------------
+let requestCounter = 1;
 
-newBtn.onclick = () => {
-  itemsContainer.innerHTML = "";
-  addItemRow();
-  modal.style.display = "flex";
-};
+const modal = $('requestModal');
+const newBtn = $('newRequestBtn');
+const cancelBtn = $('cancelBtn');
+const submitBtn = $('submitBtn');
+const itemsContainer = $('itemsContainer');
+const table = $('requestTable');
 
-closeBtn.onclick = cancelBtn.onclick = () => {
-  modal.style.display = "none";
-};
+if (newBtn) {
+  newBtn.onclick = () => {
+    itemsContainer.innerHTML = '';
+    addRequestRow();
+    modal.style.display = 'flex';
+  };
+}
 
-function addItemRow() {
-  const row = document.createElement("div");
-  row.className = "item-row";
+if (cancelBtn) {
+  cancelBtn.onclick = () => modal.style.display = 'none';
+}
+
+function addRequestRow() {
+  const row = document.createElement('div');
+  row.className = 'item-row';
   row.innerHTML = `
     <input type="text" placeholder="ސްޓޮކް އައިޓަމް">
-    <input type="number" placeholder="ބޭނުންވާ އަދަދު">
+    <input type="number" placeholder="ބޭނުންވާ Qty">
     <button onclick="this.parentElement.remove()">🗑</button>
   `;
   itemsContainer.appendChild(row);
 }
 
-document.getElementById("addItemBtn").onclick = addItemRow;
+if ($('addItemBtn')) $('addItemBtn').onclick = addRequestRow;
 
-submitBtn.onclick = () => {
-  const supervisor = document.getElementById("supervisor").value;
-  const date = new Date().toLocaleDateString();
-  const formNo = "REQ-" + String(formCounter++).padStart(4, "0");
+if (submitBtn) {
+  submitBtn.onclick = () => {
+    const supervisor = $('supervisor').value;
+    const date = new Date().toLocaleDateString();
+    const formNo = 'REQ-' + String(requestCounter++).padStart(4, '0');
 
-  requests.push({ formNo, date, supervisor, status: "ފޮނުވި" });
-  renderTable();
-  modal.style.display = "none";
-};
+    requests.push({ formNo, date, supervisor, status: 'ފޮނުވި' });
+    renderRequestTable();
+    modal.style.display = 'none';
+  };
+}
 
-function renderTable() {
-  table.innerHTML = "";
+function renderRequestTable() {
+  if (!table) return;
+  table.innerHTML = '';
   requests.forEach((r, i) => {
-    const tr = document.createElement("tr");
+    const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${i + 1}</td>
       <td>${r.formNo}</td>
@@ -230,12 +288,10 @@ function renderTable() {
       <td>${r.supervisor}</td>
       <td>${r.status}</td>
       <td>
-        <button class="icon-btn">✏️</button>
-        <button class="icon-btn">🗑</button>
+        <button>✏️</button>
+        <button>🗑</button>
       </td>
     `;
     table.appendChild(tr);
   });
-}
-
 }
