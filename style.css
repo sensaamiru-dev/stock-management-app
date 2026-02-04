@@ -25,11 +25,11 @@ header {
   min-height: calc(100vh - 70px);
 }
 
-/* ----- Right Sidebar Tabs ----- */
+/* ----- Left Sidebar Tabs ----- */
 .tabs {
   width: 220px;
   background-color: #fff;
-  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -72,7 +72,7 @@ header {
 .card h3 { font-size: 20px; margin-bottom: 10px; color: #004aad; }
 .card span { font-size: 28px; font-weight: bold; }
 
-/* ----- Stock Table ----- */
+/* ----- Tables ----- */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -85,9 +85,9 @@ table {
 
 th, td { padding: 12px 15px; text-align: left; }
 thead { background-color: #004aad; color: #fff; }
-
 tr:nth-child(even) { background-color: #f9f9f9; }
 
+/* ----- Badges and Action Buttons ----- */
 .badge {
   padding: 4px 10px;
   border-radius: 12px;
@@ -95,7 +95,6 @@ tr:nth-child(even) { background-color: #f9f9f9; }
   font-size: 12px;
   font-weight: bold;
 }
-
 .badge.in { background-color: #28a745; }
 .badge.out { background-color: #dc3545; }
 
@@ -109,10 +108,8 @@ button.action-btn {
   color: #fff;
   transition: 0.3s;
 }
-
 button.edit { background-color: #ffc107; }
 button.delete { background-color: #dc3545; }
-
 button.edit:hover { background-color: #e0a800; }
 button.delete:hover { background-color: #c82333; }
 
@@ -141,7 +138,7 @@ button:hover { background-color: #003080; }
 
 /* ----- Responsive ----- */
 @media(max-width: 900px) {
-  .main-container { flex-direction: column-reverse; }
-  .tabs { width: 100%; flex-direction: row; overflow-x: auto; border-left: none; border-bottom: 1px solid #ddd;}
-  .tab { flex: 1; border-right: 1px solid #eee; border-bottom: none; text-align: center; }
+  .main-container { flex-direction: column; }
+  .tabs { width: 100%; flex-direction: row; border-right: none; border-bottom: 1px solid #ddd; }
+  .tab { flex: 1; border-right: 1px solid #eee; text-align: center; border-bottom: none; }
 }
