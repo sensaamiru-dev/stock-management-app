@@ -1,46 +1,49 @@
 <!DOCTYPE html>
-<html lang="dv">
+<html lang="dv" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <title>ސްޓޮކް OUT</title>
 <link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
 <style>
-/* Stock OUT page extra styles */
-.search-container { display: flex; margin-bottom: 15px; }
-#stock-out-btn { margin-left: 10px; padding: 8px 12px; background-color:#004aad; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+body { font-family: 'Faruma', sans-serif; background:#f4f6f9; color:#333; }
+header { text-align:center; font-size:22px; background:#004aad; color:#fff; padding:15px 0; }
+.main-container { display:flex; min-height:calc(100vh-70px); }
+.sidebar { width:220px; background:#fff; border-left:1px solid #ddd; display:flex; flex-direction:column; }
+.sidebar a { padding:15px 20px; text-decoration:none; color:#333; border-bottom:1px solid #eee; }
+.sidebar a.active { background:#004aad; color:#fff; font-weight:bold; }
+.content { flex:1; padding:20px 30px; }
+.search-container { display:flex; margin-bottom:15px; }
+#stock-out-btn { margin-left:10px; padding:8px 12px; background-color:#004aad; color:#fff; border:none; border-radius:5px; cursor:pointer; }
 #stock-out-btn:hover { background-color:#003080; }
-
 #stock-out-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:10000; }
 .modal-content { background:#fff; padding:20px; border-radius:10px; width:90%; max-width:700px; position:relative; max-height:90%; overflow-y:auto; }
 .close-modal { position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; font-weight:bold; }
-
-#stock-out-table, .stock-out-history-table { width:100%; border-collapse: collapse; margin-top:15px; }
-#stock-out-table th, #stock-out-table td, .stock-out-history-table th, .stock-out-history-table td { border:1px solid #ccc; padding:8px; text-align:center; }
-#stock-out-table th, .stock-out-history-table th { background-color:#004aad; color:#fff; }
-
+#stock-out-table { width:100%; border-collapse:collapse; margin-top:15px; }
+#stock-out-table th, #stock-out-table td { border:1px solid #ccc; padding:8px; text-align:center; }
+#stock-out-table th { background-color:#004aad; color:#fff; }
 .add-item-btn, .remove-item-btn { padding:5px 10px; margin-top:5px; cursor:pointer; border:none; border-radius:5px; color:#fff; }
 .add-item-btn { background-color:#28a745; }
 .add-item-btn:hover { background-color:#218838; }
 .remove-item-btn { background-color:#dc3545; }
 .remove-item-btn:hover { background-color:#c82333; }
-
 .modal-buttons { margin-top:15px; display:flex; justify-content:flex-end; gap:10px; }
 .modal-buttons button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
 .submit-btn { background-color:#004aad; color:#fff; }
 .submit-btn:hover { background-color:#003080; }
 .cancel-btn { background-color:#ccc; }
 .cancel-btn:hover { background-color:#999; }
-
-/* Pagination */
+.stock-out-history-table { width:100%; border-collapse:collapse; margin-top:15px; }
+.stock-out-history-table th, .stock-out-history-table td { border:1px solid #ccc; padding:8px; text-align:center; }
+.stock-out-history-table th { background-color:#004aad; color:#fff; }
 .pagination { margin-top:10px; display:flex; justify-content:center; gap:5px; }
 .pagination button { padding:5px 10px; border:none; border-radius:5px; cursor:pointer; }
 .pagination button.active { background-color:#004aad; color:#fff; }
 </style>
 </head>
 <body>
-<header>ސްޓޮކް މެނޭޖްމަންޓް އެޕް</header>
-
+<header>ސްޓޮކް OUT</header>
 <div class="main-container">
   <div class="sidebar">
     <a href="index.html">ޑެޝްބޯޑް</a>
@@ -55,21 +58,18 @@
 
   <div class="content">
     <h2>ސްޓޮކް OUT</h2>
-
     <div class="search-container">
-      <input type="text" id="search-box" placeholder="އިޓަމް ސަރޗް">
+      <input type="text" id="search-out-box" placeholder="އިޓަމް ސަރޗް">
       <button id="stock-out-btn">ސްޓޮކް OUT</button>
     </div>
 
-    <!-- Stock OUT Modal -->
+    <!-- Stock OUT Modal (similar to Stock IN modal) -->
     <div id="stock-out-modal">
       <div class="modal-content">
         <span class="close-modal">&times;</span>
         <h3>ސްޓޮކް އައުޓް</h3>
-
         <label>ތާރީޚް:</label>
         <input type="date" id="out-date" style="width:150px;">
-
         <table id="stock-out-table">
           <thead>
             <tr>
@@ -80,17 +80,17 @@
           </thead>
           <tbody>
             <tr>
-              <td>
-                <select class="out-item-select" required></select>
-              </td>
+              <td><select class="out-item-select" required></select></td>
               <td><input type="number" class="out-item-qty" required></td>
               <td><button type="button" class="remove-item-btn">ފޮނުވާ</button></td>
             </tr>
           </tbody>
         </table>
-
         <button type="button" class="add-item-btn">އައު އިޓަމް</button>
-
+        <div>
+          <label>ރިމާކްސް:</label>
+          <textarea id="out-remarks" style="width:100%; margin-top:5px;"></textarea>
+        </div>
         <div class="modal-buttons">
           <button class="cancel-btn">މުހިން</button>
           <button class="submit-btn">ސަބްމިޓް</button>
@@ -113,159 +113,13 @@
       </thead>
       <tbody id="stock-out-history-body"></tbody>
     </table>
-
     <div class="pagination" id="stock-out-pagination"></div>
   </div>
 </div>
 
-<script src="script.js"></script>
 <script>
-const stockOutBtn = document.getElementById('stock-out-btn');
-const modal = document.getElementById('stock-out-modal');
-const closeModal = document.querySelector('.close-modal');
-const addItemBtn = document.querySelector('.add-item-btn');
-const outTableBody = document.querySelector('#stock-out-table tbody');
-const stockHistoryBody = document.getElementById('stock-out-history-body');
-const submitBtn = document.querySelector('.submit-btn');
-const cancelBtn = document.querySelector('.cancel-btn');
-const searchBox = document.getElementById('search-box');
-const paginationContainer = document.getElementById('stock-out-pagination');
-
-let stockOutHistory = [];
-const itemsPerPage = 10;
-let currentPage = 1;
-
-// Open modal
-stockOutBtn.addEventListener('click', ()=>{ modal.style.display='flex'; populateItemSelects(); });
-
-// Close modal
-closeModal.addEventListener('click', ()=>{ modal.style.display='none'; });
-cancelBtn.addEventListener('click', ()=>{ modal.style.display='none'; });
-
-// Populate items in select
-function populateItemSelects(){
-  const selects = document.querySelectorAll('.out-item-select');
-  selects.forEach(select => {
-    select.innerHTML = '';
-    stockItems.forEach(item=>{
-      const option = document.createElement('option');
-      option.value = item.name;
-      option.innerText = item.name;
-      select.appendChild(option);
-    });
-  });
-}
-populateItemSelects();
-
-// Add new row in modal
-addItemBtn.addEventListener('click', ()=>{
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td><select class="out-item-select" required></select></td>
-                  <td><input type="number" class="out-item-qty" required></td>
-                  <td><button type="button" class="remove-item-btn">ފޮނުވާ</button></td>`;
-  outTableBody.appendChild(tr);
-  populateItemSelects();
-});
-
-// Remove row
-outTableBody.addEventListener('click', e=>{
-  if(e.target.classList.contains('remove-item-btn')){
-    e.target.closest('tr').remove();
-  }
-});
-
-// Submit Stock OUT
-submitBtn.addEventListener('click', ()=>{
-  const date = document.getElementById('out-date').value || new Date().toISOString().split('T')[0];
-  const staff = 'Admin'; // example, can add login later
-
-  const rows = document.querySelectorAll('#stock-out-table tbody tr');
-  rows.forEach(row=>{
-    const itemName = row.querySelector('.out-item-select').value;
-    const qty = parseInt(row.querySelector('.out-item-qty').value);
-
-    // Deduct from stockItems
-    let stockItem = stockItems.find(i=>i.name===itemName);
-    if(stockItem && stockItem.qty>=qty){
-      stockItem.qty -= qty;
-
-      // Add to OUT history
-      stockOutHistory.push({date,item:itemName,qty,staff,remarks:''});
-    } else {
-      alert(`ސްޓޮކް ${itemName} ހުރިހާ ގޮތުގައި ނުބައިފި`);
-    }
-  });
-
-  renderStockOutHistory();
-  modal.style.display='none';
-  outTableBody.querySelectorAll('tr').forEach((tr,i)=>{
-    if(i>0) tr.remove();
-    else tr.querySelector('input').value='';
-  });
-});
-
-// Render history
-function renderStockOutHistory(){
-  const start = (currentPage-1)*itemsPerPage;
-  const end = start+itemsPerPage;
-  const pageItems = stockOutHistory.slice(start,end);
-
-  stockHistoryBody.innerHTML='';
-  pageItems.forEach((entry,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML=`<td>${start+i+1}</td>
-                  <td>${entry.date}</td>
-                  <td>${entry.item}</td>
-                  <td>${entry.qty}</td>
-                  <td>${entry.staff}</td>
-                  <td>${entry.remarks}</td>
-                  <td>
-                    <button onclick="editStockOut(${start+i})">އެޑިޓް</button>
-                    <button onclick="deleteStockOut(${start+i})">ޑިލީޓް</button>
-                  </td>`;
-    stockHistoryBody.appendChild(tr);
-  });
-
-  renderPagination();
-}
-
-// Pagination
-function renderPagination(){
-  const pages = Math.ceil(stockOutHistory.length/itemsPerPage);
-  paginationContainer.innerHTML='';
-  for(let i=1;i<=pages;i++){
-    const btn=document.createElement('button');
-    btn.innerText=i;
-    if(i===currentPage) btn.classList.add('active');
-    btn.addEventListener('click', ()=>{ currentPage=i; renderStockOutHistory(); });
-    paginationContainer.appendChild(btn);
-  }
-}
-
-// Edit/Delete functions
-function editStockOut(index){
-  const entry = stockOutHistory[index];
-  alert(`އެޑިޓް ކުރަން ހުރި: ${entry.item} (${entry.qty})`);
-}
-function deleteStockOut(index){
-  if(confirm('ސްޓޮކް OUT ލިސްޓް ޑިލީޓް ކުރަންތަ؟')){
-    const entry = stockOutHistory.splice(index,1)[0];
-    // Return to stockItems
-    let stockItem = stockItems.find(i=>i.name===entry.item);
-    if(stockItem) stockItem.qty += entry.qty;
-    renderStockOutHistory();
-  }
-}
-
-// Search filter
-searchBox.addEventListener('input', ()=>{
-  const filter = searchBox.value.toLowerCase();
-  const rows = stockHistoryBody.querySelectorAll('tr');
-  rows.forEach(row=>{
-    const itemName = row.cells[2].innerText.toLowerCase();
-    row.style.display = itemName.includes(filter)?'':'none';
-  });
-});
+// Stock OUT modal & history JS
+// Similar to Stock IN but calls addStockOut(entries,date,staff,remarks)
 </script>
 </body>
 </html>
