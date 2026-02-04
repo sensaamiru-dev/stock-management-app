@@ -1,34 +1,11 @@
-// Tab switching
-const tabs = document.querySelectorAll('.tab');
-const contents = document.querySelectorAll('.tab-content');
-
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    tabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const target = tab.dataset.tab;
-    contents.forEach(c => c.classList.remove('active'));
-    document.getElementById(target).classList.add('active');
-  });
-});
-
 // Stock items array
 let stockItems = [];
 let stockInCount = 0;
 let stockOutCount = 0;
 
-function addStockItem() {
-  const name = prompt("އިޓަމް ނަން ލިޔުން:");
-  const category = prompt("ކެޓަގަރީ ލިޔުން:");
-  if(name && category){
-    stockItems.push({name, category});
-    renderStockTable();
-    updateDashboard();
-  }
-}
-
 function renderStockTable(){
   const tbody = document.querySelector('#stock-table tbody');
+  if(!tbody) return;
   tbody.innerHTML = '';
   stockItems.forEach((item, index) => {
     const tr = document.createElement('tr');
@@ -48,7 +25,16 @@ function renderStockTable(){
   });
 }
 
-// Edit & Delete Functions
+function addStockItem() {
+  const name = prompt("އިޓަމް ނަން ލިޔުން:");
+  const category = prompt("ކެޓަގަރީ ލިޔުން:");
+  if(name && category){
+    stockItems.push({name, category, qty:0});
+    renderStockTable();
+    updateDashboard();
+  }
+}
+
 function editItem(index){
   const item = stockItems[index];
   const newName = prompt("އިޓަމް ނަން އެޑިޓް ލިޔުން:", item.name);
@@ -68,29 +54,17 @@ function deleteItem(index){
   }
 }
 
-
 function updateDashboard(){
-  document.getElementById('total-items').innerText = stockItems.length;
-  document.getElementById('total-in').innerText = stockInCount;
-  document.getElementById('total-out').innerText = stockOutCount;
+  const totalItems = document.getElementById('total-items');
+  const totalIn = document.getElementById('total-in');
+  const totalOut = document.getElementById('total-out');
+  if(totalItems) totalItems.innerText = stockItems.length;
+  if(totalIn) totalIn.innerText = stockInCount;
+  if(totalOut) totalOut.innerText = stockOutCount;
 }
 
-// Stock Request Form
-document.getElementById('request-form').addEventListener('submit', function(e){
-  e.preventDefault();
-  const item = document.getElementById('request-item').value;
-  const qty = document.getElementById('request-qty').value;
-  const li = document.createElement('li');
-  li.innerText = `އިޓަމް: ${item}, ސަމްޕަލް: ${qty}`;
-  document.getElementById('request-list').appendChild(li);
-  this.reset();
-});
-
 // Stock IN
-document.getElementById('stock-in-form').addEventListener('submit', function(e){
-  e.preventDefault();
-  const item = document.getElementById('in-item').value;
-  const qty = parseInt(document.getElementById('in-qty').value);
+function stockIn(item, qty){
   let stockItem = stockItems.find(i => i.name === item);
   if(stockItem){
     stockItem.qty = (stockItem.qty || 0) + qty;
@@ -100,23 +74,19 @@ document.getElementById('stock-in-form').addEventListener('submit', function(e){
   stockInCount += qty;
   renderStockTable();
   updateDashboard();
-  this.reset();
-});
+}
 
 // Stock OUT
-document.getElementById('stock-out-form').addEventListener('submit', function(e){
-  e.preventDefault();
-  const item = document.getElementById('out-item').value;
-  const qty = parseInt(document.getElementById('out-qty').value);
+function stockOut(item, qty){
   let stockItem = stockItems.find(i => i.name === item);
   if(stockItem && stockItem.qty >= qty){
     stockItem.qty -= qty;
     stockOutCount += qty;
     renderStockTable();
     updateDashboard();
+    return true;
   } else {
     alert("ސްޓޮކް މަގާމަށް ނުބައިފި");
+    return false;
   }
-  this.reset();
-});
-
+}
