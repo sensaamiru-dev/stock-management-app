@@ -30,12 +30,44 @@ function addStockItem() {
 function renderStockTable(){
   const tbody = document.querySelector('#stock-table tbody');
   tbody.innerHTML = '';
-  stockItems.forEach(item => {
+  stockItems.forEach((item, index) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${item.name}</td><td>${item.category}</td><td>${item.qty || 0}</td>`;
+    const qtyBadge = item.qty > 0 
+      ? `<span class="badge in">${item.qty}</span>` 
+      : `<span class="badge out">0</span>`;
+    tr.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.category}</td>
+      <td>${qtyBadge}</td>
+      <td>
+        <button class="action-btn edit" onclick="editItem(${index})">އެޑިޓް</button>
+        <button class="action-btn delete" onclick="deleteItem(${index})">ޑިލީޓް</button>
+      </td>
+    `;
     tbody.appendChild(tr);
   });
 }
+
+// Edit & Delete Functions
+function editItem(index){
+  const item = stockItems[index];
+  const newName = prompt("އިޓަމް ނަން އެޑިޓް ލިޔުން:", item.name);
+  const newCat = prompt("ކެޓަގަރީ އެޑިޓް ލިޔުން:", item.category);
+  if(newName && newCat){
+    stockItems[index].name = newName;
+    stockItems[index].category = newCat;
+    renderStockTable();
+  }
+}
+
+function deleteItem(index){
+  if(confirm("މަގާމަށް މުހިންގެ ސްޓޮކް އިޓަމް ޑިލީޓް ކޮށްލިންތަ؟")){
+    stockItems.splice(index,1);
+    renderStockTable();
+    updateDashboard();
+  }
+}
+
 
 function updateDashboard(){
   document.getElementById('total-items').innerText = stockItems.length;
