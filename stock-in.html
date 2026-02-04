@@ -1,281 +1,72 @@
 <!DOCTYPE html>
 <html lang="dv" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>Stock APP</title>
-<link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<style>
-body { font-family: 'Faruma', sans-serif; background:#f4f6f9; color:#333; }
-header { text-align:center; font-size:22px; background:#004aad; color:#fff; padding:15px 0; }
-.main-container { display:flex; min-height:calc(100vh-70px); }
-.sidebar { width:220px; background:#fff; border-left:1px solid #ddd; display:flex; flex-direction:column; }
-.sidebar a { padding:15px 20px; text-decoration:none; color:#333; border-bottom:1px solid #eee; }
-.sidebar a.active { background:#004aad; color:#fff; font-weight:bold; }
-.content { flex:1; padding:20px 30px; }
-.search-container { display:flex; margin-bottom:15px; }
-#stock-in-btn { margin-left:10px; padding:8px 12px; background-color:#004aad; color:#fff; border:none; border-radius:5px; cursor:pointer; }
-#stock-in-btn:hover { background-color:#003080; }
-#stock-in-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:10000; }
-.modal-content { background:#fff; padding:20px; border-radius:10px; width:90%; max-width:700px; position:relative; max-height:90%; overflow-y:auto; }
-.close-modal { position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; font-weight:bold; }
-#stock-in-table { width:100%; border-collapse:collapse; margin-top:15px; }
-#stock-in-table th, #stock-in-table td { border:1px solid #ccc; padding:8px; text-align:center; }
-#stock-in-table th { background-color:#004aad; color:#fff; }
-.add-item-btn, .remove-item-btn { padding:5px 10px; margin-top:5px; cursor:pointer; border:none; border-radius:5px; color:#fff; }
-.add-item-btn { background-color:#28a745; }
-.add-item-btn:hover { background-color:#218838; }
-.remove-item-btn { background-color:#dc3545; }
-.remove-item-btn:hover { background-color:#c82333; }
-.modal-buttons { margin-top:15px; display:flex; justify-content:flex-end; gap:10px; }
-.modal-buttons button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; }
-.submit-btn { background-color:#004aad; color:#fff; }
-.submit-btn:hover { background-color:#003080; }
-.cancel-btn { background-color:#ccc; }
-.cancel-btn:hover { background-color:#999; }
-.stock-in-history-table { width:100%; border-collapse:collapse; margin-top:15px; }
-.stock-in-history-table th, .stock-in-history-table td { border:1px solid #ccc; padding:8px; text-align:center; }
-.stock-in-history-table th { background-color:#004aad; color:#fff; }
-.pagination { margin-top:10px; display:flex; justify-content:center; gap:5px; }
-.pagination button { padding:5px 10px; border:none; border-radius:5px; cursor:pointer; }
-.pagination button.active { background-color:#004aad; color:#fff; }
-</style>
+  <meta charset="UTF-8">
+  <title>ސްޓޮކް IN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>ސްޓޮކް IN</header>
+<div class="app-container">
+  <aside class="sidebar">
+    <h2>ސްޓޮކް</h2>
+    <a href="stock-in.html" class="active">📥 ސްޓޮކް IN</a>
+    <a href="stock-out.html">📤 ސްޓޮކް OUT</a>
+    <a href="stock-request.html">📄 ސްޓޮކް ރިކުއެސްޓް</a>
+  </aside>
 
-<div class="main-container">
-  <div class="sidebar">
-    <a href="index.html">ޑެޝްބޯޑް</a>
-    <a href="stock-items.html">ސްޓޮކް ކަނޑައެޅު</a>
-    <a href="stock-request.html">ސްޓޮކް ރިކުސްޓް</a>
-    <a href="stock-in.html" class="active">ސްޓޮކް IN</a>
-    <a href="stock-out.html">ސްޓޮކް OUT</a>
-    <a href="staff.html">ސްޓާފް</a>
-    <a href="reports.html">ރިޕޯޓް</a>
-    <a href="settings.html">ސެޓިންގް</a>
-  </div>
+  <main class="main-content">
+    <h1>📥 ސްޓޮކް IN</h1>
 
-  <div class="content">
-    <h2>ސްޓޮކް IN</h2>
-
-    <div class="search-container">
-      <input type="text" id="search-box" placeholder="އިޓަމް ސަރޗް">
-      <button id="stock-in-btn">ސްޓޮކް IN</button>
+    <div class="toolbar">
+      <button onclick="openStockInModal()">➕ ސްޓޮކް IN</button>
     </div>
 
-    <!-- Stock IN Modal -->
-    <div id="stock-in-modal">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h3>ސްޓޮކް އިން</h3>
-
-        <label>ތާރީޚް:</label>
-        <input type="date" id="in-date" style="width:150px;">
-
-        <table id="stock-in-table">
-          <thead>
-            <tr>
-              <th>އިޓަމް</th>
-              <th>ސަމްޕަލް</th>
-              <th>އެކްޝަން</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><select class="in-item-select" required></select></td>
-              <td><input type="number" class="in-item-qty" required></td>
-              <td><button type="button" class="remove-item-btn">ފޮނުވާ</button></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <button type="button" class="add-item-btn">އައު އިޓަމް</button>
-
-        <div>
-          <label>ރިމާކްސް:</label>
-          <textarea id="in-remarks" style="width:100%; margin-top:5px;"></textarea>
-        </div>
-
-        <div class="modal-buttons">
-          <button class="cancel-btn">މުހިން</button>
-          <button class="submit-btn">ސަބްމިޓް</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Stock IN History Table -->
-    <table class="stock-in-history-table">
+    <table class="table">
       <thead>
         <tr>
           <th>#</th>
           <th>ތާރީޚް</th>
-          <th>އިޓަމް</th>
-          <th>ސަމްޕަލް</th>
-          <th>އެންޓްރީ ސްޓާފް</th>
-          <th>ރިމާކްސް</th>
-          <th>އެކްޝަން</th>
+          <th>އައިޓަމް</th>
+          <th>Qty</th>
+          <th>ސްޓާފް</th>
+          <th>ރިމާރކްސް</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody id="stock-in-history-body"></tbody>
     </table>
 
-    <div class="pagination" id="stock-in-pagination"></div>
+    <div id="stock-in-pagination" class="pagination"></div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="stockInModal">
+  <div class="modal-box">
+    <h2>📥 ސްޓޮކް IN</h2>
+
+    <label>ތާރީޚް</label>
+    <input type="date" id="stockInDate">
+
+    <div id="stockInItems"></div>
+
+    <button class="add-row" onclick="addStockInRow()">➕ އައިޓަމް</button>
+
+    <label>ސްޓާފް</label>
+    <input type="text" id="stockInStaff">
+
+    <label>ރިމާރކްސް</label>
+    <textarea id="stockInRemarks"></textarea>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeStockInModal()">❌ ކެންސަލް</button>
+      <button class="submit" onclick="submitStockIn()">✅ ސަބްމިޓް</button>
+    </div>
   </div>
 </div>
 
-<script src="script.js"></script>
-<script>
-// Assuming stockItems is available globally (from stock-items.html)
-if(!window.stockItems) window.stockItems = [
-  {name:'ސްޓޮކް A', category:'ކެޓަ 1', qty:50, inQty:50, alertLevel:2},
-  {name:'ސްޓޮކް B', category:'ކެޓަ 2', qty:20, inQty:20, alertLevel:1},
-];
-
-const stockInBtn = document.getElementById('stock-in-btn');
-const modal = document.getElementById('stock-in-modal');
-const closeModal = document.querySelector('.close-modal');
-const addItemBtn = document.querySelector('.add-item-btn');
-const inTableBody = document.querySelector('#stock-in-table tbody');
-const stockHistoryBody = document.getElementById('stock-in-history-body');
-const submitBtn = document.querySelector('.submit-btn');
-const cancelBtn = document.querySelector('.cancel-btn');
-const searchBox = document.getElementById('search-box');
-const paginationContainer = document.getElementById('stock-in-pagination');
-
-let stockInHistory = [];
-const itemsPerPage = 10;
-let currentPage = 1;
-
-// Open modal
-stockInBtn.addEventListener('click', ()=>{ modal.style.display='flex'; populateItemSelects(); });
-
-// Close modal
-closeModal.addEventListener('click', ()=>{ modal.style.display='none'; });
-cancelBtn.addEventListener('click', ()=>{ modal.style.display='none'; });
-
-// Populate items in select
-function populateItemSelects(){
-  const selects = document.querySelectorAll('.in-item-select');
-  selects.forEach(select => {
-    select.innerHTML = '';
-    stockItems.forEach(item=>{
-      const option = document.createElement('option');
-      option.value = item.name;
-      option.innerText = item.name;
-      select.appendChild(option);
-    });
-  });
-}
-populateItemSelects();
-
-// Add new row in modal
-addItemBtn.addEventListener('click', ()=>{
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td><select class="in-item-select" required></select></td>
-                  <td><input type="number" class="in-item-qty" required></td>
-                  <td><button type="button" class="remove-item-btn">ފޮނުވާ</button></td>`;
-  inTableBody.appendChild(tr);
-  populateItemSelects();
-});
-
-// Remove row
-inTableBody.addEventListener('click', e=>{
-  if(e.target.classList.contains('remove-item-btn')){
-    e.target.closest('tr').remove();
-  }
-});
-
-// Submit Stock IN
-submitBtn.addEventListener('click', ()=>{
-  const date = document.getElementById('in-date').value || new Date().toISOString().split('T')[0];
-  const staff = 'Admin'; // Example
-
-  const rows = document.querySelectorAll('#stock-in-table tbody tr');
-  rows.forEach(row=>{
-    const itemName = row.querySelector('.in-item-select').value;
-    const qty = parseInt(row.querySelector('.in-item-qty').value);
-    const remarks = document.getElementById('in-remarks').value;
-
-    let stockItem = stockItems.find(i=>i.name===itemName);
-    if(stockItem){
-      stockItem.qty += qty;
-      stockItem.inQty = (stockItem.inQty||0)+qty;
-    } else {
-      stockItems.push({name:itemName, category:'N/A', qty, inQty:qty, alertLevel:0});
-    }
-
-    stockInHistory.push({date,item:itemName,qty,staff,remarks});
-  });
-
-  renderStockInHistory();
-  modal.style.display='none';
-  inTableBody.querySelectorAll('tr').forEach((tr,i)=>{
-    if(i>0) tr.remove();
-    else tr.querySelector('input').value='';
-  });
-});
-
-// Render history
-function renderStockInHistory(){
-  const start = (currentPage-1)*itemsPerPage;
-  const end = start+itemsPerPage;
-  const pageItems = stockInHistory.slice(start,end);
-
-  stockHistoryBody.innerHTML='';
-  pageItems.forEach((entry,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML=`<td>${start+i+1}</td>
-                  <td>${entry.date}</td>
-                  <td>${entry.item}</td>
-                  <td>${entry.qty}</td>
-                  <td>${entry.staff}</td>
-                  <td>${entry.remarks}</td>
-                  <td>
-                    <button onclick="editStockIn(${start+i})">އެޑިޓް</button>
-                    <button onclick="deleteStockIn(${start+i})">ޑިލީޓް</button>
-                  </td>`;
-    stockHistoryBody.appendChild(tr);
-  });
-
-  renderPagination();
-}
-
-// Pagination
-function renderPagination(){
-  const pages = Math.ceil(stockInHistory.length/itemsPerPage);
-  paginationContainer.innerHTML='';
-  for(let i=1;i<=pages;i++){
-    const btn=document.createElement('button');
-    btn.innerText=i;
-    if(i===currentPage) btn.classList.add('active');
-    btn.addEventListener('click', ()=>{ currentPage=i; renderStockInHistory(); });
-    paginationContainer.appendChild(btn);
-  }
-}
-
-// Edit/Delete functions
-function editStockIn(index){ alert('އެޑިޓް ކުރަން ހުރި'); }
-function deleteStockIn(index){
-  if(confirm('ސްޓޮކް IN ލިސްޓް ޑިލީޓް ކުރަންތަ؟')){
-    const entry = stockInHistory.splice(index,1)[0];
-    let stockItem = stockItems.find(i=>i.name===entry.item);
-    if(stockItem) stockItem.qty -= entry.qty;
-    renderStockInHistory();
-  }
-}
-
-// Search filter
-searchBox.addEventListener('input', ()=>{
-  const filter = searchBox.value.toLowerCase();
-  const rows = stockHistoryBody.querySelectorAll('tr');
-  rows.forEach(row=>{
-    const itemName = row.cells[2].innerText.toLowerCase();
-    row.style.display = itemName.includes(filter)?'':'none';
-  });
-});
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
