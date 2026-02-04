@@ -1,44 +1,26 @@
 <!DOCTYPE html>
-<html lang="dv">
 <html lang="dv" dir="rtl">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
-  <title>Stock APP</title>
-<link rel="stylesheet" href="style.css">
-<script src="script.js"></script>
+  <meta charset="UTF-8">
+  <title>ސްޓޮކް ސިސްޓަމް</title>
+  <link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
- <body>
-<header>ސްޓޮކް މެނޭޖްމަންޓް އެޕް</header>
-<div class="main-container">
-  <div class="sidebar">
-    <a href="index.html" class="active">ޑެޝްބޯޑް</a>
-    <a href="stock-items.html">ސްޓޮކް ކަނޑައެޅު</a>
-    <a href="stock-request.html">ސްޓޮކް ރިކުސްޓް</a>
-    <a href="stock-in.html">ސްޓޮކް IN</a>
-    <a href="stock-out.html">ސްޓޮކް OUT</a>
-    <a href="staff.html">ސްޓާފް</a>
-    <a href="reports.html">ރިޕޯޓް</a>
-    <a href="settings.html">ސެޓިންގް</a>
-  </div>
-  <div class="content">
-    <h2>ޑެޝްބޯޑް</h2>
-    <div class="dashboard-cards">
-      <div class="card">
-        <h3>އިޓަމް އައުޓެމް</h3>
-        <span id="total-items">0</span>
-      </div>
-      <div class="card">
-        <h3>ސްޓޮކް IN ސަފް</h3>
-        <span id="total-in">0</span>
-      </div>
-      <div class="card">
-        <h3>ސްޓޮކް OUT ސަފް</h3>
-        <span id="total-out">0</span>
-      </div>
-    </div>
-  </div>
+<body>
+
+<div class="app-container">
+  <aside class="sidebar">
+    <h2>ސްޓޮކް</h2>
+    <a href="stock-in.html">📥 ސްޓޮކް IN</a>
+    <a href="stock-out.html">📤 ސްޓޮކް OUT</a>
+    <a href="stock-request.html">📄 ސްޓޮކް ރިކުއެސްޓް</a>
+  </aside>
+
+  <main class="main-content">
+    <h1>މަރުޙަބާ</h1>
+    <p>ފަރާތް ސްޓޮކް ސިސްޓަމަށް ވަދެއްވުމަށް</p>
+  </main>
 </div>
-<script src="script.js"></script>
-<script>updateDashboard();</script>
+
 </body>
 </html>
