@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="dv">
+<head>
+  <meta charset="UTF-8">
+  <title>ސްޓޮކް ރިކުސްޓް</title>
+  <link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Extra styling for Stock Request */
+    .request-table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
+    .request-table th, .request-table td { padding: 8px; border: 1px solid #ccc; text-align: center; }
+    .request-table th { background-color: #004aad; color: #fff; }
+    button.add-item { margin: 10px 0; }
+    textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; }
+    select { width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+<header>ސްޓޮކް މެނޭޖްމަންޓް އެޕް</header>
+<div class="main-container">
+  <div class="sidebar">
+    <a href="index.html">ޑެޝްބޯޑް</a>
+    <a href="stock-items.html">ސްޓޮކް ކަނޑައެޅު</a>
+    <a href="stock-request.html" class="active">ސްޓޮކް ރިކުސްޓް</a>
+    <a href="stock-in.html">ސްޓޮކް IN</a>
+    <a href="stock-out.html">ސްޓޮކް OUT</a>
+    <a href="staff.html">ސްޓާފް</a>
+    <a href="reports.html">ރިޕޯޓް</a>
+    <a href="settings.html">ސެޓިންގް</a>
+  </div>
+
+  <div class="content">
+    <h2>އެދޭ ތަކެތި</h2>
+
+    <form id="request-form">
+      <label>ފޯމް ނަން (Form No.)</label>
+      <input type="text" id="form-number" readonly style="background-color:#eee;">
+
+      <table class="request-table" id="request-items-table">
+        <thead>
+          <tr>
+            <th>ސްޓޮކް އައިޓަމް</th>
+            <th>ބޭނުންވާ އަދަދު</th>
+            <th>ބޭނުންވާ ސަބަބު</th>
+            <th>އެކްޝަން</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <select class="item-select" multiple required></select>
+            </td>
+            <td><input type="number" class="item-qty" required></td>
+            <td><input type="number" class="item-subtotal" required></td>
+            <td><button type="button" class="remove-row">ފޮނުވާ</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button type="button" class="add-item">އައު އިޓަމް އިންސާޓް</button>
+
+      <div class="form-group">
+        <label>ރިމާކްސް</label>
+        <textarea id="remarks" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>ސުޕަރވައިޒަރް</label>
+        <select id="supervisor" required>
+          <option value="">ސުޕަރވައިޒަރް ސެލެކްޓް</option>
+          <option value="Ali">Ali</option>
+          <option value="Aishath">Aishath</option>
+          <option value="Mohamed">Mohamed</option>
+        </select>
+      </div>
+
+      <button type="submit">ސަބްމިޓް</button>
+    </form>
+
+    <h3>ސްޓޮކް ރިކުސްޓް ލިސްޓް</h3>
+    <ul id="submitted-requests"></ul>
+
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+  // Generate Form Number from sequence in settings (default 1)
+  let formSequence = localStorage.getItem('formSequence') || 1;
+  const formNumberInput = document.getElementById('form-number');
+  formNumberInput.value = 'SR-' + String(formSequence).padStart(4, '0');
+
+  // Populate item select from stockItems
+  function populateItemSelect(){
+    const selects = document.querySelectorAll('.item-select');
+    selects.forEach(select => {
+      select.innerHTML = '';
+      stockItems.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.name;
+        option.innerText = item.name;
+        select.appendChild(option);
+      });
+    });
+  }
+  populateItemSelect();
+
+  // Add new row
+  document.querySelector('.add-item').addEventListener('click', () => {
+    const tbody = document.querySelector('#request-items-table tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><select class="item-select" multiple required></select></td>
+      <td><input type="number" class="item-qty" required></td>
+      <td><input type="number" class="item-subtotal" required></td>
+      <td><button type="button" class="remove-row">ފޮނުވާ</button></td>
+    `;
+    tbody.appendChild(tr);
+    populateItemSelect();
+  });
+
+  // Remove row
+  document.addEventListener('click', e => {
+    if(e.target.classList.contains('remove-row')){
+      e.target.closest('tr').remove();
+    }
+  });
+
+  // Submit form
+  document.getElementById('request-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const rows = document.querySelectorAll('#request-items-table tbody tr');
+    const supervisor = document.getElementById('supervisor').value;
+    const remarks = document.getElementById('remarks').value;
+    const formNo = formNumberInput.value;
+
+    if(!supervisor){
+      alert('ސުޕަރވައިޒަރް ހުރި ސެލެކްޓް ކުރޭ');
+      return;
+    }
+
+    const items = [];
+    rows.forEach(row => {
+      const selectedOptions = Array.from(row.querySelector('.item-select').selectedOptions).map(o=>o.value);
+      const qty = parseInt(row.querySelector('.item-qty').value);
+      const subtotal = parseInt(row.querySelector('.item-subtotal').value);
+      items.push({items:selectedOptions, qty, subtotal});
+    });
+
+    // Add to submitted requests list
+    const ul = document.getElementById('submitted-requests');
+    const li = document.createElement('li');
+    li.innerText = `${formNo} - ${supervisor} - ${items.map(i=>i.items.join(',')).join('; ')} | ރިމާކްސް: ${remarks}`;
+    ul.appendChild(li);
+
+    alert(`ފޯމް ${formNo} ސަބްމިޓް ކުރެވޭނެ. ސުޕަރވައިޒަރް: ${supervisor}`);
+
+    // Increment sequence
+    formSequence++;
+    localStorage.setItem('formSequence', formSequence);
+    formNumberInput.value = 'SR-' + String(formSequence).padStart(4, '0');
+
+    // Reset form
+    this.reset();
+    populateItemSelect();
+  });
+</script>
+</body>
+</html>
