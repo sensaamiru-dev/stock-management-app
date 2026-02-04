@@ -1,13 +1,35 @@
 <!DOCTYPE html>
-<html lang="dv">
+<html lang="dv" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>ސްޓޮކް ކަނޑައެޅު</title>
-  <link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>ސްޓޮކް ކަނޑައެޅު</title>
+<link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+body { font-family: 'Faruma', sans-serif; background:#f4f6f9; color:#333; }
+header { text-align:center; font-size:22px; background:#004aad; color:#fff; padding:15px 0; }
+.main-container { display:flex; min-height:calc(100vh-70px); }
+.sidebar { width:220px; background:#fff; border-left:1px solid #ddd; display:flex; flex-direction:column; }
+.sidebar a { padding:15px 20px; text-decoration:none; color:#333; border-bottom:1px solid #eee; }
+.sidebar a.active { background:#004aad; color:#fff; font-weight:bold; }
+.content { flex:1; padding:20px 30px; }
+table { width:100%; border-collapse:collapse; margin-top:15px; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+th, td { padding:10px; text-align:center; border:1px solid #ccc; }
+th { background:#004aad; color:#fff; }
+.badge { padding:4px 10px; border-radius:12px; color:#fff; font-size:12px; font-weight:bold; }
+.badge.high { background:#28a745; }
+.badge.medium { background:#ffc107; }
+.badge.low { background:#dc3545; }
+button.action-btn { padding:5px 10px; border:none; border-radius:6px; cursor:pointer; color:#fff; }
+button.edit { background:#ffc107; } button.edit:hover { background:#e0a800; }
+button.delete { background:#dc3545; } button.delete:hover { background:#c82333; }
+#search-box { width:250px; padding:8px 12px; margin-bottom:15px; }
+</style>
 </head>
 <body>
-<header>ސްޓޮކް މެނޭޖްމަންޓް އެޕް</header>
+
+<header>ސްޓޮކް ކަނޑައެޅު</header>
+
 <div class="main-container">
   <div class="sidebar">
     <a href="index.html">ޑެޝްބޯޑް</a>
@@ -23,10 +45,8 @@
   <div class="content">
     <h2>ސްޓޮކް ކަނޑައެޅު</h2>
 
-    <!-- Search Bar -->
-    <input type="text" id="search-bar" placeholder="އައިޓަމް ނަން ސަރޗް">
+    <input type="text" id="search-box" placeholder="އިޓަމް ސަރޗް">
 
-    <!-- Stock Table -->
     <table id="stock-table">
       <thead>
         <tr>
@@ -46,84 +66,59 @@
 
 <script src="script.js"></script>
 <script>
-  // Render stock table for this page
-  function renderStockItems(){
-    const tbody = document.querySelector('#stock-table tbody');
-    tbody.innerHTML = '';
-    stockItems.forEach((item, index) => {
-      const totalIn = item.qty || 0;
-      const totalOut = item.out || 0;
-      const alertLevel = totalIn <= 5 ? 'Low' : 'Normal';
-      const status = totalIn <= 5 ? 'ލޯ ސްޓޯކް' : 'ނޮރމަލް';
+// Stock Items Array
+let stockItems = [];
 
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${item.name}</td>
-        <td>${item.category}</td>
-        <td>${totalIn}</td>
-        <td>${totalOut}</td>
-        <td>${alertLevel}</td>
-        <td>${status}</td>
-        <td>
-          <button class="action-btn edit" onclick="editItem(${index})">އެޑިޓް</button>
-          <button class="action-btn delete" onclick="deleteItem(${index})">ޑިލީޓް</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+// Sample alert thresholds
+const alertLevels = { high: 50, medium: 20, low: 0 };
 
-  // Initial render
-  renderStockItems();
+// Render Stock Table
+function renderStockTable(){
+  const tbody = document.querySelector('#stock-table tbody');
+  tbody.innerHTML = '';
+  stockItems.forEach((item, index)=>{
+    const remaining = item.qty || 0;
+    let status = 'high';
+    if(remaining<=alertLevels.medium && remaining>0) status='medium';
+    else if(remaining<=alertLevels.low) status='low';
 
-  // Search functionality
-  const searchBar = document.getElementById('search-bar');
-  searchBar.addEventListener('input', function(){
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#stock-table tbody tr');
-    rows.forEach(row => {
-      const name = row.cells[0].innerText.toLowerCase();
-      row.style.display = name.includes(filter) ? '' : 'none';
-    });
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.category}</td>
+      <td>${item.inQty || 0}</td>
+      <td>${remaining}</td>
+      <td>${item.alertLevel || 0}</td>
+      <td><span class="badge ${status}">${status}</span></td>
+      <td>
+        <button class="action-btn edit" onclick="editItem(${index})">އެޑިޓް</button>
+        <button class="action-btn delete" onclick="deleteItem(${index})">ޑިލީޓް</button>
+      </td>`;
+    tbody.appendChild(tr);
   });
+}
 
-  // Update table whenever stock changes
-  function updateStockTable(){
-    renderStockItems();
-    updateDashboard();
-  }
+// Add/Edit/Delete functions
+function editItem(index){ /* Implement edit popup */ alert('އެޑިޓް ކުރަން'); }
+function deleteItem(index){ if(confirm('ސްޓޮކް އިޓަމް ޑިލީޓް ކުރަންތަ؟')){ stockItems.splice(index,1); renderStockTable(); }}
 
-  // Override original functions to refresh table
-  const originalStockIn = stockIn;
-  stockIn = function(item, qty){
-    originalStockIn(item, qty);
-    updateStockTable();
-  }
+// Search Filter
+document.getElementById('search-box').addEventListener('input', function(){
+  const filter = this.value.toLowerCase();
+  const rows = document.querySelectorAll('#stock-table tbody tr');
+  rows.forEach(row=>{
+    const name = row.cells[0].innerText.toLowerCase();
+    row.style.display = name.includes(filter)?'':'none';
+  });
+});
 
-  const originalStockOut = stockOut;
-  stockOut = function(item, qty){
-    if(originalStockOut(item, qty)){
-      updateStockTable();
-    }
-  }
-
-  const originalAddStockItem = addStockItem;
-  addStockItem = function(){
-    originalAddStockItem();
-    updateStockTable();
-  }
-
-  const originalEditItem = editItem;
-  editItem = function(index){
-    originalEditItem(index);
-    updateStockTable();
-  }
-
-  const originalDeleteItem = deleteItem;
-  deleteItem = function(index){
-    originalDeleteItem(index);
-    updateStockTable();
-  }
+// Sample for testing
+stockItems = [
+  {name:'ސްޓޮކް A', category:'ކެޓަ 1', qty:30, inQty:50, alertLevel:2},
+  {name:'ސްޓޮކް B', category:'ކެޓަ 2', qty:10, inQty:20, alertLevel:3},
+  {name:'ސްޓޮކް C', category:'ކެޓަ 3', qty:5, inQty:15, alertLevel:1}
+];
+renderStockTable();
 </script>
 </body>
 </html>
