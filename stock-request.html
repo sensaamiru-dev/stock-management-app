@@ -2,70 +2,62 @@
 <html lang="dv" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>Stock APP</title>
+  <title>ސްޓޮކް ރިކުއެސްޓް</title>
   <link href="https://fonts.googleapis.com/css2?family=Faruma&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>ސްޓޮކް ރިކުސްޓް</header>
+<div class="app-container">
+  <aside class="sidebar">
+    <h2>ސްޓޮކް</h2>
+    <a href="stock-in.html">📥 ސްޓޮކް IN</a>
+    <a href="stock-out.html">📤 ސްޓޮކް OUT</a>
+    <a href="stock-request.html" class="active">📄 ސްޓޮކް ރިކުއެސްޓް</a>
+  </aside>
 
-<div class="page-container">
+  <main class="main-content">
+    <h1>📄 ސްޓޮކް ރިކުއެސްޓް</h1>
 
-  <div class="page-top-bar">
-    <h2>ސްޓޮކް ރިކުސްޓް</h2>
-    <button id="newRequestBtn">+ އައު ރިކުސްޓް</button>
-  </div>
+    <div class="toolbar">
+      <button id="newRequestBtn">➕ ނިއު ރިކުއެސްޓް</button>
+    </div>
 
-  <input type="text" id="searchBox" placeholder="ހޯދާ..." class="search-input">
-
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>ފޯމް ނަންބަރ</th>
-        <th>ތާރީޚް</th>
-        <th>ބޭނުންވާ ސްޓާފް</th>
-        <th>ސްޓޭޓަސް</th>
-        <th>އެކްޝަންސް</th>
-      </tr>
-    </thead>
-    <tbody id="requestTable"></tbody>
-  </table>
-
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>ފޯމް #</th>
+          <th>ތާރީޚް</th>
+          <th>ސުޕަރވައިޒަރ</th>
+          <th>ސްޓޭޓަސް</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="requestTable"></tbody>
+    </table>
+  </main>
 </div>
 
 <!-- Modal -->
 <div class="modal" id="requestModal">
-  <div class="modal-content">
-    <span class="close-btn" id="closeModal">&times;</span>
-    <h3>އެދޭ ތަކެތި</h3>
+  <div class="modal-box">
+    <h2>📄 ސްޓޮކް ރިކުއެސްޓް</h2>
+
+    <label>ސުޕަރވައިޒަރ</label>
+    <input type="text" id="supervisor">
 
     <div id="itemsContainer"></div>
 
-    <button id="addItemBtn">+ އައު އައިޓަމް</button>
-
-    <div class="form-group">
-      <label>ރިމާކްސް</label>
-      <textarea id="remarks"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>ސުޕަރވައިޒަރ</label>
-      <select id="supervisor">
-        <option>އަޙްމަދު</option>
-        <option>ޢަލީ</option>
-        <option>ފާތިމާ</option>
-      </select>
-    </div>
+    <button class="add-row" id="addItemBtn">➕ އައިޓަމް</button>
 
     <div class="modal-actions">
-      <button class="cancel-btn" id="cancelBtn">ކެންސަލް</button>
-      <button class="submit-btn" id="submitBtn">ސަބްމިޓް</button>
+      <button class="cancel" id="cancelBtn">❌ ކެންސަލް</button>
+      <button class="submit" id="submitBtn">✅ ސަބްމިޓް</button>
     </div>
   </div>
 </div>
 
-<script src="stock-request.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
