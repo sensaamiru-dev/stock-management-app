@@ -143,3 +143,141 @@ button:hover { background-color: #003080; }
   .sidebar{width:100%; flex-direction:row; border-right:none; border-bottom:1px solid #ddd;}
   .sidebar a{flex:1; border-right:1px solid #eee; border-bottom:none; text-align:center;}
 }
+html, body {
+  direction: rtl;
+  font-family: 'Faruma', sans-serif;
+  margin: 0;
+  background: #f4f6f9;
+}
+
+header {
+  background: #004aad;
+  color: white;
+  padding: 15px 25px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.page-container {
+  padding: 20px;
+}
+
+.page-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 12px;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #004aad;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover { background: #003080; }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.data-table th, .data-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.data-table th {
+  background: #004aad;
+  color: white;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 420px;
+  max-width: 95%;
+  border-radius: 10px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.form-group {
+  margin-top: 10px;
+}
+
+textarea, select, input {
+  width: 100%;
+  padding: 7px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-top: 4px;
+}
+
+.item-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.item-row input {
+  flex: 1;
+}
+
+.item-row button {
+  background: #dc3545;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.cancel-btn {
+  background: #6c757d;
+}
+
+.submit-btn {
+  background: #28a745;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
