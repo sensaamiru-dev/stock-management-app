@@ -175,4 +175,67 @@ function deleteStockOut(index){
     renderStockItemsTable();
     renderStockOutHistory();
   }
+  let requests = [];
+let formCounter = 1;
+
+const modal = document.getElementById("requestModal");
+const newBtn = document.getElementById("newRequestBtn");
+const closeBtn = document.getElementById("closeModal");
+const cancelBtn = document.getElementById("cancelBtn");
+const submitBtn = document.getElementById("submitBtn");
+const itemsContainer = document.getElementById("itemsContainer");
+const table = document.getElementById("requestTable");
+
+newBtn.onclick = () => {
+  itemsContainer.innerHTML = "";
+  addItemRow();
+  modal.style.display = "flex";
+};
+
+closeBtn.onclick = cancelBtn.onclick = () => {
+  modal.style.display = "none";
+};
+
+function addItemRow() {
+  const row = document.createElement("div");
+  row.className = "item-row";
+  row.innerHTML = `
+    <input type="text" placeholder="ސްޓޮކް އައިޓަމް">
+    <input type="number" placeholder="ބޭނުންވާ އަދަދު">
+    <button onclick="this.parentElement.remove()">🗑</button>
+  `;
+  itemsContainer.appendChild(row);
+}
+
+document.getElementById("addItemBtn").onclick = addItemRow;
+
+submitBtn.onclick = () => {
+  const supervisor = document.getElementById("supervisor").value;
+  const date = new Date().toLocaleDateString();
+  const formNo = "REQ-" + String(formCounter++).padStart(4, "0");
+
+  requests.push({ formNo, date, supervisor, status: "ފޮނުވި" });
+  renderTable();
+  modal.style.display = "none";
+};
+
+function renderTable() {
+  table.innerHTML = "";
+  requests.forEach((r, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${r.formNo}</td>
+      <td>${r.date}</td>
+      <td>${r.supervisor}</td>
+      <td>${r.status}</td>
+      <td>
+        <button class="icon-btn">✏️</button>
+        <button class="icon-btn">🗑</button>
+      </td>
+    `;
+    table.appendChild(tr);
+  });
+}
+
 }
